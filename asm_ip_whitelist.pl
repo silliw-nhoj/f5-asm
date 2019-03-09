@@ -63,7 +63,7 @@ if ($action) {
 ##### Subroutines #######
 
 sub parseARGS {
-    if ($#ARGV >= 0) {  
+  if ($#ARGV >= 0) {  
 		if ( $ARGV[0] =~ /\b\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\b/ ) {
 			$bigip = $ARGV[0];
 			if ($ARGV[1]) {
@@ -164,31 +164,30 @@ sub getWhiteListIPs {
 }
 
 sub getCreds {
-    print "\nUsername: "; 
-    chomp($user=<STDIN>);
-    print "Password: ";
-    system('stty','-echo');
-    chomp($password=<STDIN>);
-    system('stty','echo');
-    my $test = `curl -k -u $user:$password -X GET https://$bigip/mgmt/tm/ltm/virtual 2>/dev/null`;
-    if ($test =~ /Authentication required/) {
+	print "\nUsername: "; 
+	chomp($user=<STDIN>);
+	print "Password: ";
+	system('stty','-echo');
+	chomp($password=<STDIN>);
+	system('stty','echo');
+	my $test = `curl -k -u $user:$password -X GET https://$bigip/mgmt/tm/ltm/virtual 2>/dev/null`;
+	if ($test =~ /Authentication required/) {
 		print "**Failed Auth**\n";
 		exit;
-    }
+	}
 	print "\n";
     
 }
 
 sub usageMsg {
-    print "# Note: This script is provided as-is and is not supported by F5 Networks.\n# Usage: You can view IP Address Exceptions by Policy and toggle them to either bypass or block\n\n";
+	print "# Note: This script is provided as-is and is not supported by F5 Networks.\n# Usage: You can view IP Address Exceptions by Policy and toggle them to either bypass or block\n\n";
 	print "\tShow: view IP address exceptions by policy\n\t\t./asm_ip_whitelist.pl <bigip-mgmt-address>\n";
 	print "\tToggle bypass or block: will toggle all or specified IP address exceptions to either bypass or block if they contain the defined description string.\n\t\t./asm_ip_whitelist.pl <bigip-mgmt-address> <bypass | block> <description string> <ip-address optional>\n";
 	print "\tAdd White List IP Address: add a white list IP address to all policies. Note: description must contain a description string inorder to be affected by this script.\n\t\t./asm_ip_whitelist.pl <bigip-mgmt-address> add <whitlist-IP> <IP-mask> <description>\n";
 	print "\tDelete White List IP Address: delete a white list IP address from all policies.\n\t\t./asm_ip_whitelist.pl <bigip-mgmt-address> delete <whitlist-IP>\n";
 	print "\tAdd White List host IP Addresses by file: parse a file of /32 IPs and add to all policies. Note: description must contain a description string inorder to be affected by this script.\n\t\t./asm_ip_whitelist.pl <bigip-mgmt-address> addfile </path/file> <description>\n";	
 	print "\tDelete White List IP Addresses by file: parse a file of /32 IPs and delete from all policies.\n\t\t./asm_ip_whitelist.pl <bigip-mgmt-address> delfile </path/file>\n";
-
-    exit;
+	exit;
 }
 
 sub uniq {
@@ -253,9 +252,9 @@ sub toggleScannerIPs {
 sub addorDeleteIP {
 	if ($action eq "add") {
 		if ($#ARGV >= 4) {
-				$wListIP = $ARGV[2];
-				$wListIPMask = $ARGV[3];
-				$wLIPDescription = $ARGV[4];
+			$wListIP = $ARGV[2];
+			$wListIPMask = $ARGV[3];
+			$wLIPDescription = $ARGV[4];
 		} else {
 			&usageMsg;
 			exit;
@@ -287,8 +286,8 @@ sub addorDeleteIP {
 		$wListIPMask = "255.255.255.255";
 
 		if ($#ARGV >= 3) {
-				$ipFile = $ARGV[2];
-				$wLIPDescription = $ARGV[3];
+			$ipFile = $ARGV[2];
+			$wLIPDescription = $ARGV[3];
 		} else {
 			&usageMsg;
 			exit;
@@ -297,15 +296,14 @@ sub addorDeleteIP {
 		open($ipFileFH, "$ipFile") || die "Unable to open '$ipFile': $!\n";
 
 		while ( my $ip = <$ipFileFH>) {
-            chomp($ip);
-            $ip =~ s/[\r\n]$//;
-            $ip =~ s/\s+/ /g;
-            $ip =~ s/\s+$//;
+			chomp($ip);
+			$ip =~ s/[\r\n]$//;
+			$ip =~ s/\s+/ /g;
+			$ip =~ s/\s+$//;
 			foreach $policy (sort keys %policies) {
 				my $blackhole = `curl -k -u $user:$password -H "Content-Type: application/json" -X POST -d '{"ipAddress":"$ip","description":"$wLIPDescription","ipMask":"$wListIPMask"}' https://$bigip/mgmt/tm/asm/policies/$policies{$policy}{id}/whitelist-ips/ 2>/dev/null`;
 				$policies{$policy}{changed} = 1;
 			}
-
 		}
 
 	}
@@ -321,10 +319,10 @@ sub addorDeleteIP {
 		open($ipFileFH, "$ipFile") || die "Unable to open '$ipFile': $!\n";
 
 		while ( my $ip = <$ipFileFH>) {
-            chomp($ip);
-            $ip =~ s/[\r\n]$//;
-            $ip =~ s/\s+/ /g;
-            $ip =~ s/\s+$//;
+			chomp($ip);
+			$ip =~ s/[\r\n]$//;
+			$ip =~ s/\s+/ /g;
+			$ip =~ s/\s+$//;
 			foreach $policy (sort keys %policies) {
 				foreach $wListIPid (sort keys %{$policies{$policy}{whiteListIPs}}){
 					if ($ip eq $policies{$policy}{whiteListIPs}{$wListIPid}{ip}) {
