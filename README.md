@@ -1,7 +1,7 @@
 # asm_ip_whitelist.pl
-## Note: This script is provided as-is and is not supported by F5 Networks.
+### Note: This script is provided as-is and is not supported by F5 Networks.
 
-## Usage: You can view IP Address Exceptions by Policy and toggle them to either bypass or block.
+### Usage: You can view IP Address Exceptions by Policy and toggle them to either bypass or block.
 
        Show: view IP address exceptions by policy.
                ./asm_ip_whitelist.pl <bigip-mgmt-address>
